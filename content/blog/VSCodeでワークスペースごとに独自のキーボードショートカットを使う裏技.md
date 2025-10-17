@@ -1,6 +1,6 @@
 +++
 title = "VSCodeでワークスペースごとに独自のキーボードショートカットを使う裏技"
-date = 2025-10-16
+date = 2025-10-17
 
 [extra]
 display_published = true
