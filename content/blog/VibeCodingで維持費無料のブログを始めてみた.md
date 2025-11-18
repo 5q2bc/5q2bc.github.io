@@ -1,6 +1,6 @@
 +++
 title = "VibeCodingで維持費無料のブログを始めてみた"
-date = 2025-11-17
+date = 2025-11-18
 
 [extra]
 display_published = true
