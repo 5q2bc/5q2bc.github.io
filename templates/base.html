@@ -55,6 +55,14 @@
 
         <!-- Move JS to end of body and add defer -->
         <script src="{{ get_url(path='js/script.js') }}" defer></script>
-        <script src="{{ get_url(path='js/anchor-link.js') }}" defer></script
+        <script src="{{ get_url(path='js/anchor-link.js') }}" defer></script<!-- Google tag (gtag.js) -->
+        <script async src="https://www.googletagmanager.com/gtag/js?id=G-B3HYYP6VQZ"></script>
+        <script>
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+
+        gtag('config', 'G-B3HYYP6VQZ');
+        </script>
     </body>
 </html>
