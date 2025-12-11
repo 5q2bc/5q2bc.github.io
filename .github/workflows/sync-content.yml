@@ -29,19 +29,22 @@ jobs:
           path: note
           token: ${{ secrets.CONTENT_CHANGE_REFLECTION_TOKEN }}
 
-      # 3. ファイルをコピーする
-      - name: Copy files to raw directory
+      # 3. ファイルをコピーし、変更のあったmdファイルのリストを生成する
+      - name: Copy files and create change list
         run: |
-          # 同期元のリポジトリの public/ の内容を content/blog/raw/ にコピーする
-          # --delete オプションで、コピー元にないファイルは削除する
           mkdir -p content/blog/raw
-          rsync -av --delete note/public/ content/blog/raw/
+          # rsyncの--itemize-changes(-i)で変更内容を出力し、
+          # 追加/更新されたmdファイル (>f*.md) のパスだけを抽出してファイルに保存する
+          rsync -av --delete --itemize-changes note/public/ content/blog/raw/ | \
+            grep -E '^>f.*\.md$' | awk '{print $2}' > changed_files.txt
 
       # 4. マークダウンファイルをフォーマットする
       - name: Format markdown files
         run: |
           chmod +x scripts/format_md.sh
-          ./scripts/format_md.sh
+          # changed_files.txt にリストされたファイルだけをフォーマット対象にする
+          # xargs の -r (--no-run-if-empty) は入力が空の場合にコマンドを実行しないオプション
+          cat changed_files.txt | xargs -r ./scripts/format_md.sh
 
       # 5. 変更があればコミットしてプッシュする
       - name: Commit and push if changed
