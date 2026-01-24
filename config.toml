@@ -27,7 +27,7 @@ description = "しがない組み込みエンジニアの開発ブログ"
 render_emoji = true
 external_links_target_blank = true
 smart_punctuation = true
-highlight_code = true
+highlighting = true
 
 [markdown.highlighting]
 extra_syntaxes_and_themes = ["static/syntax_themes"]
