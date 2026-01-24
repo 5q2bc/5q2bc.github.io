@@ -31,9 +31,9 @@ smart_punctuation = true
 [markdown.highlighting]
 # highlighting = true
 extra_syntaxes_and_themes = ["static/syntax_themes"]
-highlight_theme = "Dimmed_Monokai"
-highlight_lines = "all"
-highlight_linenos = true
+theme = "Dimmed_Monokai"
+# highlight_lines = "all"
+code_line_numbers = true
 
 [slugify]
 paths = "on"
