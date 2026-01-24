@@ -31,7 +31,7 @@ smart_punctuation = true
 [markdown.highlighting]
 # highlighting = true
 extra_syntaxes_and_themes = ["static/syntax_themes"]
-theme = "Dimmed_Monokai"
+# theme = "Dimmed_Monokai"
 # highlight_lines = "all"
 code_line_numbers = true
 
