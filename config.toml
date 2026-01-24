@@ -28,12 +28,12 @@ render_emoji = true
 external_links_target_blank = true
 smart_punctuation = true
 
-[markdown.highlighting]
+# [markdown.highlighting]
 # highlighting = true
-extra_syntaxes_and_themes = ["static/syntax_themes"]
+# extra_syntaxes_and_themes = ["static/syntax_themes"]
 # theme = "Dimmed_Monokai"
 # highlight_lines = "all"
-code_line_numbers = true
+# code_line_numbers = true
 
 [slugify]
 paths = "on"
