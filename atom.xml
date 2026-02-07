@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>kauai tech-blog</title>
+    <link href="https://5q2bc.github.io/atom.xml" rel="self"/>
+    <link href="https:&#x2F;&#x2F;5q2bc.github.io&#x2F;"/>
+    <updated>2026-02-07T05:37:15+0000</updated>
+    <id>https:&#x2F;&#x2F;5q2bc.github.io&#x2F;</id>
+
+    
+    
+    
+    
+        
+    
+    
+    
+        
+        
+            
+            <entry>
+                <title>VibeCodingで維持費無料のブログを始めてみた</title>
+                <link href="https:&#x2F;&#x2F;5q2bc.github.io&#x2F;blog&#x2F;vibecodingdewei-chi-fei-wu-liao-noburoguwoshi-metemita&#x2F;"/>
+                <updated>2026-02-07T00:00:00+0000</updated>
+                <id>https:&#x2F;&#x2F;5q2bc.github.io&#x2F;blog&#x2F;vibecodingdewei-chi-fei-wu-liao-noburoguwoshi-metemita&#x2F;</id>
+                <content type="html">&amp;lt;h2 id=&amp;quot;hazimeni&amp;quot;&amp;gt;はじめに&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;VibeCodingを活用し、Web開発の知識がほとんどない状態から、できるだけコードに触れずにブログサイトを構築した過程をまとめました。&amp;lt;br &amp;#x2F;&amp;gt;
+Web技術がほとんど分からない状態でも、AIツールを活用すれば簡単にブログサイトが作れるという内容です。
+叩いたコマンドの記載はないので、実際に試す際はそれぞれの公式ドキュメントを参照してください。もしくは、お手持ちのAIに聞いてみてください。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;利用したAIツール:&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;Gemini CLI（主に実装・自動化で活用）&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;GitHub Copilot（軽い質問や手動編集時の補完に使用）&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;ChatGPT（参考URLの調査などに活用）&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;h2 id=&amp;quot;cheng-guo-wu&amp;quot;&amp;gt;成果物&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;先に完成したサイトを見てみましょう。&amp;lt;br &amp;#x2F;&amp;gt;
+&amp;lt;a rel=&amp;quot;noopener external&amp;quot; target=&amp;quot;_blank&amp;quot; href=&amp;quot;https:&amp;#x2F;&amp;#x2F;5q2bc.github.io&amp;#x2F;&amp;quot;&amp;gt;作成したブログサイト&amp;lt;&amp;#x2F;a&amp;gt;&amp;lt;br &amp;#x2F;&amp;gt;
+&amp;lt;a rel=&amp;quot;noopener external&amp;quot; target=&amp;quot;_blank&amp;quot; href=&amp;quot;https:&amp;#x2F;&amp;#x2F;github.com&amp;#x2F;5q2bc&amp;#x2F;5q2bc.github.io&amp;quot;&amp;gt;GitHubリポジトリ&amp;lt;&amp;#x2F;a&amp;gt;&amp;lt;br &amp;#x2F;&amp;gt;
+（説明の都合で、実際のサイトのコミット履歴とは異なる部分があります）&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;ji-shu-xuan-ding-ren-jian&amp;quot;&amp;gt;技術選定（人間）&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;静的サイトジェネレーターにはZolaを選び、ホスティングはGitHub Pagesを利用しました。&amp;lt;br &amp;#x2F;&amp;gt;
+Markdownで書けるならJekyllやHugoでも良かったのですが、&amp;lt;strong&amp;gt;Rust製&amp;lt;&amp;#x2F;strong&amp;gt;という理由でZolaを選びました（あ、私Rustが好きです）。ビルド速度も速いらしいですが、小規模サイトでは体感差はほぼありません。テーマの好みや使いやすさで選ぶのが一番だと思います。GitHub Pagesは、リポジトリを公開するだけで簡単にホスティングできる点が魅力でした。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;HugoやJekyllでも同様のことができるので、気に入るテーマが見つかるものを選ぶのが良いと思います。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;ripozitorizuo-cheng-ren-jian&amp;quot;&amp;gt;リポジトリ作成（人間）&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;ゼロから作るのは手間だったので、Zolaのテーマをクローンし、LiveDemoサイトを参考にたたき台を作成しました。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ol&amp;gt;
+&amp;lt;li&amp;gt;Zolaのテーマを選定&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;テーマをローカルにクローン&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;LiveDemo用コンテンツを削除（Gemini CLIで自動化）&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;サイト名などを自分用に変更&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;テーマのGit履歴を削除し、&amp;lt;code&amp;gt;git init&amp;lt;&amp;#x2F;code&amp;gt;で新規リポジトリ化&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;GitHubで&amp;lt;code&amp;gt;{Username}.github.io&amp;lt;&amp;#x2F;code&amp;gt;リポジトリを作成&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;リモートを追加し、ローカルからプッシュ&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ol&amp;gt;
+&amp;lt;p&amp;gt;ここまででサイトのベースが完成します。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;rokaruhuan-jing-gou-zhu-gemini-cli&amp;quot;&amp;gt;ローカル環境構築（Gemini CLI）&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;Gemini CLIの&amp;lt;code&amp;gt;--yolo&amp;lt;&amp;#x2F;code&amp;gt;オプションで、RustやZolaのセットアップも自動化できました。コマンドはZola公式ドキュメントを参照すればOKです。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;https:&amp;#x2F;&amp;#x2F;www.rust-lang.org&amp;#x2F;tools&amp;#x2F;install&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;https:&amp;#x2F;&amp;#x2F;www.getzola.org&amp;#x2F;documentation&amp;#x2F;getting-started&amp;#x2F;cli-usage&amp;#x2F;&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;これでローカルでビルド・プレビューできる環境が整いました。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;github-actionsdezi-dong-depuroi-gemini-cli&amp;quot;&amp;gt;GitHub Actionsで自動デプロイ（Gemini CLI）&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;GitHub Actionsの設定ファイルもGemini CLIの&amp;lt;code&amp;gt;--yolo&amp;lt;&amp;#x2F;code&amp;gt;で、公式ドキュメントに沿って進めてもらいました。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;https:&amp;#x2F;&amp;#x2F;www.getzola.org&amp;#x2F;documentation&amp;#x2F;deployment&amp;#x2F;github-pages&amp;#x2F;&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;ビルド自体は問題なく進みましたが、GitHub Pagesの公開ブランチ設定を間違えて（&amp;lt;code&amp;gt;master&amp;lt;&amp;#x2F;code&amp;gt;に設定していたが、自動デプロイ先の&amp;lt;code&amp;gt;gh-pages&amp;lt;&amp;#x2F;code&amp;gt;が正解だった）、1時間ほど悩みました。人間が何かするときは公式ドキュメントをよく読み、落ち着いて設定しましょう（でないとAIより頭が悪いのがばれます）。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;https:&amp;#x2F;&amp;#x2F;docs.github.com&amp;#x2F;ja&amp;#x2F;pages&amp;#x2F;getting-started-with-github-pages&amp;#x2F;creating-a-github-pages-site&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;これで最小構成のサイトが自動デプロイできるようになりました。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;Tips：&amp;lt;br &amp;#x2F;&amp;gt;
+長い細かい指示出しが面倒なときは、参考サイトを示して「このサイトのように作って」と指示すると、AIが必要なコードを生成してくれる確率が上がります。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;kontentuguan-li-yong-ripozitorizhui-jia-gemini-cli&amp;quot;&amp;gt;コンテンツ管理用リポジトリ追加（Gemini CLI）&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;コンテンツとホスティングを分離したかったので、管理用リポジトリを新たに作成しました。&amp;lt;br &amp;#x2F;&amp;gt;
+&amp;lt;code&amp;gt;public&amp;lt;&amp;#x2F;code&amp;gt;ディレクトリの変更を検知し、GitHub Actionsでホスティング用リポジトリにMarkdownをコピー＆デプロイする仕組みもGemini CLIで自動生成できました。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;saitoji-neng-nozhui-jia-gemini-cli-github-copilot&amp;quot;&amp;gt;サイト機能の追加（Gemini CLI + GitHub Copilot）&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;ここからは欲しい機能をAIに指示して追加していきました。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;目次の自動生成&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;見出しへのアンカーリンク&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;コードブロックのコピペボタン&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;コードブロックのシンタックスハイライト&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;指示→コード生成→修正→テスト（今回は人力）を繰り返し、納得いくまで改善しました。Web開発未経験でも、普段見ているサイトの機能をどんどん追加できるのが楽しかったです。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;Tips:&amp;lt;br &amp;#x2F;&amp;gt;
+一般的な話ですが、機能実装は小さく小さく作っていくと確実です。大きな機能を一気に実装しようとすると、バグが出たときに原因を特定しづらくなります。小さな単位で実装し、テストを繰り返すことで、問題の切り分けが容易になります。&amp;lt;br &amp;#x2F;&amp;gt;
+例えばコピペボタンを追加する場合、まずはボタンの表示だけ実装し、次にクリック時の動作を追加するなど、段階的に進めると良いと思います。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;zuo-cheng-sitemitefen-katutakoto&amp;quot;&amp;gt;作成してみて分かったこと&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;AIの提案で学びが増える&amp;lt;&amp;#x2F;strong&amp;gt;: CopilotやGeminiの提案を読むことで、知らなかったWeb技術への理解が(チョット)深まりました。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;今後の機能実装のハードルが下がる&amp;lt;&amp;#x2F;strong&amp;gt;: VibeCodingで知識ゼロから機能追加できるので、今後もAIを活用してサイトを育てていこうと思えます。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;更新のハードルが下がる&amp;lt;&amp;#x2F;strong&amp;gt;: Markdownで書いてプッシュするだけなので、思いついたときにすぐ記事を追加できます。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;h2 id=&amp;quot;matome&amp;quot;&amp;gt;まとめ&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;VibeCodingとAIツールを活用すれば、Web開発初心者でも維持費ゼロのブログサイトを簡単に構築・運用できます。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;AIツールの活用&amp;lt;&amp;#x2F;strong&amp;gt;: Gemini CLIやGitHub Copilotで、面倒な設定や自動化、機能追加もスムーズ。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;静的サイトジェネレーターの選択&amp;lt;&amp;#x2F;strong&amp;gt;: ZolaでMarkdownベースのシンプル運用と高速ビルド。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;GitHub Actionsによる自動デプロイ&amp;lt;&amp;#x2F;strong&amp;gt;: 手作業を減らし、更新のたびに自動公開。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;コンテンツとホスティングの分離&amp;lt;&amp;#x2F;strong&amp;gt;: 管理しやすく、拡張や運用も柔軟。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;&amp;lt;strong&amp;gt;機能追加もAIで効率化&amp;lt;&amp;#x2F;strong&amp;gt;: 目次やアンカーリンク、コピペボタンなども短時間で実装。&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;今後もAIツールを活用しながら、必要な機能追加やデザイン調整を行い、自分だけのブログを育てていきたいと思います。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;hr &amp;#x2F;&amp;gt;
+&amp;lt;p&amp;gt;この記事が、これからVibeCodingやAIツールでWebサイトを作りたい方の参考になれば幸いです。&amp;lt;&amp;#x2F;p&amp;gt;
+</content>
+            </entry>
+            
+        
+            
+            <entry>
+                <title>VSCodeでワークスペースごとに独自のキーボードショートカットを使う裏技</title>
+                <link href="https:&#x2F;&#x2F;5q2bc.github.io&#x2F;blog&#x2F;vscodedewakusupesugotonidu-zi-nokibodosiyotokatutowoshi-uli-ji&#x2F;"/>
+                <updated>2026-02-07T00:00:00+0000</updated>
+                <id>https:&#x2F;&#x2F;5q2bc.github.io&#x2F;blog&#x2F;vscodedewakusupesugotonidu-zi-nokibodosiyotokatutowoshi-uli-ji&#x2F;</id>
+                <content type="html">&amp;lt;p&amp;gt;皆さんはVSCodeに独自のキーボードショートカット追加していますか?&amp;lt;br &amp;#x2F;&amp;gt;
+よく使う小技的なものや、VSCodeのタスク機能を割り当ててコマンド実行をさせている方も多いんじゃないでしょうか。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;VSCodeのキーボードショートカット作成はkeybinding.jsonを編集することで可能で、キーボードショートカットごとに発動条件を“When“で指定することができます。&amp;lt;br &amp;#x2F;&amp;gt;
+例えば&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;pre&amp;gt;&amp;lt;code data-lang=&amp;quot;json&amp;quot;&amp;gt;	{
+	&amp;amp;quot;key&amp;amp;quot;: &amp;amp;quot;ctrl+shift+j&amp;amp;quot;,
+	&amp;amp;quot;command&amp;amp;quot;: &amp;amp;quot;workbench.action.terminal.focus&amp;amp;quot;,
+	&amp;amp;quot;when&amp;amp;quot;: &amp;amp;quot;editorTextFocus&amp;amp;quot;
+	},{
+	&amp;amp;quot;key&amp;amp;quot;: &amp;amp;quot;ctrl+shift+j&amp;amp;quot;,
+	&amp;amp;quot;command&amp;amp;quot;: &amp;amp;quot;workbench.action.focusFirstEditorGroup&amp;amp;quot;,
+	&amp;amp;quot;when&amp;amp;quot;: &amp;amp;quot;terminalFocus&amp;amp;quot;
+	},
+&amp;lt;&amp;#x2F;code&amp;gt;&amp;lt;&amp;#x2F;pre&amp;gt;
+&amp;lt;p&amp;gt;とすることで同じctrl+shift+jのショートカットを&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;エディター選択時はターミナルに移動&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;ターミナル選択時はエディターに移動&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;として使うことができます。&amp;lt;br &amp;#x2F;&amp;gt;
+(話は逸れますが、このショートカットは個人的によく使うもので、ctrl+jのパネル表示&amp;#x2F;非表示との親和性が高いのでおすすめです)&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;whenの詳しい使い方については &amp;lt;a rel=&amp;quot;noopener external&amp;quot; target=&amp;quot;_blank&amp;quot; href=&amp;quot;https:&amp;#x2F;&amp;#x2F;code.visualstudio.com&amp;#x2F;api&amp;#x2F;references&amp;#x2F;when-clause-contexts&amp;quot;&amp;gt;公式の解説&amp;lt;&amp;#x2F;a&amp;gt;を参照してください&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;ですがwhenでは対応できないこんなシチュエーションに遭遇したことはありませんか?&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ul&amp;gt;
+&amp;lt;li&amp;gt;同じキーボードショートカットをワークスペースごとに意味を変えたい&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;押しやすいキーの組み合わせをワークスペースごとに意味を変えて使いたい&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;特定のワークスペースだけでしか使わないキーボードショートカットがある&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ul&amp;gt;
+&amp;lt;p&amp;gt;これらはVSCodeではワークスペースごとにkeybinding.jsonを置くことができず、whenの機能ではワークスペースを識別できないために生じます。&amp;lt;br &amp;#x2F;&amp;gt;
+そのため公式にはワークスペースごとに違ったキーボードショートカットを使うことはサポートされていないのですが、今回はこれを(あまりスマートではないが便利な)裏技で回避していきます。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h1 id=&amp;quot;yarukotonogai-yao&amp;quot;&amp;gt;やることの概要&amp;lt;&amp;#x2F;h1&amp;gt;
+&amp;lt;p&amp;gt;やることとしては至ってシンプルです。&amp;lt;br &amp;#x2F;&amp;gt;
+ワークスペースごとに定義できないのならばワークスペースごとにフラグを作成し、それを見てキーボードショートカットの有効無効を変えてやろうという作戦になります。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;具体的には&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;ol&amp;gt;
+&amp;lt;li&amp;gt;ワークスペースの.vscode&amp;#x2F;setting.jsonのファイルでワークスペースに固有の設定値にTrueを入れる&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;li&amp;gt;keybinding.jsonの使いたいキーボードショートカットの“when“で1. で指定した設定値がTrueかどうかの確認をいれる&amp;lt;&amp;#x2F;li&amp;gt;
+&amp;lt;&amp;#x2F;ol&amp;gt;
+&amp;lt;p&amp;gt;となります。&amp;lt;br &amp;#x2F;&amp;gt;
+一つづつ見ていきましょう。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h1 id=&amp;quot;wakusupesudenoshe-ding&amp;quot;&amp;gt;ワークスペースでの設定&amp;lt;&amp;#x2F;h1&amp;gt;
+&amp;lt;p&amp;gt;ワークスペースの識別のために固有のフラグを作ります。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;まず使いたいワークスペースを開き、VSCodeのワークスペースごとの設定情報を入れる&amp;lt;code&amp;gt;.vscode&amp;#x2F;setting.json&amp;lt;&amp;#x2F;code&amp;gt;フォルダに移動します。(なければ作成してください)&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;次に中に次の１行を追加します。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;pre&amp;gt;&amp;lt;code data-lang=&amp;quot;json&amp;quot;&amp;gt;{
+	&amp;amp;quot;workspaceKeybindings.hogehoge_ws.enabled&amp;amp;quot;: true,
+}
+&amp;lt;&amp;#x2F;code&amp;gt;&amp;lt;&amp;#x2F;pre&amp;gt;
+&amp;lt;p&amp;gt;ここの“workspaceKeybindings.hogehoge_ws.enabled“はいま適当に考えた名前なので、VSCodeに「不明な構成設定」とか言われてグレーアウトされますが、気にしなくて良いです。&amp;lt;br &amp;#x2F;&amp;gt;
+名前もワークスペースごとにお好きなものに変えてください。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;以上でワークスペース側での設定は終わりです。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h1 id=&amp;quot;keybinding-jsondenoshe-ding&amp;quot;&amp;gt;keybinding.jsonでの設定&amp;lt;&amp;#x2F;h1&amp;gt;
+&amp;lt;p&amp;gt;keybinding.jsonを編集して、ショートカットがワークスペース側で作ったフラグを判定できるようにします。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;p&amp;gt;具体的には下記のようにします。フラグの名前はそれぞれのワークスペースでつけたものと合わせてください。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;pre&amp;gt;&amp;lt;code data-lang=&amp;quot;json&amp;quot;&amp;gt;	{
+	&amp;amp;quot;key&amp;amp;quot;: &amp;amp;quot;ctrl+shift+q&amp;amp;quot;,
+	&amp;amp;quot;command&amp;amp;quot;: &amp;amp;quot;command_1&amp;amp;quot;,
+	&amp;amp;quot;when&amp;amp;quot;: &amp;amp;quot;workspaceKeybindings.hogehoge_ws.enabled&amp;amp;quot;,
+	},
+	{
+	&amp;amp;quot;key&amp;amp;quot;: &amp;amp;quot;ctrl+shift+q&amp;amp;quot;,
+	&amp;amp;quot;command&amp;amp;quot;: &amp;amp;quot;command_2&amp;amp;quot;,
+	&amp;amp;quot;when&amp;amp;quot;: &amp;amp;quot;workspaceKeybindings.hugahuga_ws.enabled&amp;amp;quot;,
+	},
+&amp;lt;&amp;#x2F;code&amp;gt;&amp;lt;&amp;#x2F;pre&amp;gt;
+&amp;lt;p&amp;gt;↑のようにすると、同じctrl+shift+qのショートカットでworkspaceKeybindings.hogehoge_ws.enabledがTrueにしているワークスペースではcommand_1が、workspaceKeybindings.hugahuga_ws.enabledがTrueにしているワークスペースではcommand_2が実行されます。&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h1 id=&amp;quot;owari&amp;quot;&amp;gt;おわり&amp;lt;&amp;#x2F;h1&amp;gt;
+&amp;lt;p&amp;gt;以上のようにすることでワークスペースごとに独自のキーボードショートカットを使うことができます。&amp;lt;br &amp;#x2F;&amp;gt;
+ワークスペースだけで完結できないのが玉に瑕ですが、かゆいところに手が届くようになる場合もあると思いますので、参考にしてご活用ください&amp;lt;&amp;#x2F;p&amp;gt;
+&amp;lt;h2 id=&amp;quot;can-kao&amp;quot;&amp;gt;参考&amp;lt;&amp;#x2F;h2&amp;gt;
+&amp;lt;p&amp;gt;https:&amp;#x2F;&amp;#x2F;stackoverflow.com&amp;#x2F;questions&amp;#x2F;48945319&amp;#x2F;a-keybindings-json-per-workspace-in-visual-studio-code&amp;lt;&amp;#x2F;p&amp;gt;
+</content>
+            </entry>
+            
+        
+            
+            <entry>
+                <title>test</title>
+                <link href="https:&#x2F;&#x2F;5q2bc.github.io&#x2F;blog&#x2F;test&#x2F;"/>
+                <updated>2025-07-06T00:00:00+0000</updated>
+                <id>https:&#x2F;&#x2F;5q2bc.github.io&#x2F;blog&#x2F;test&#x2F;</id>
+                <content type="html">&amp;lt;p&amp;gt;test text&amp;lt;&amp;#x2F;p&amp;gt;
+</content>
+            </entry>
+            
+        
+    
+</feed>
