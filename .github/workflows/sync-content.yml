@@ -36,6 +36,7 @@ jobs:
           DIR_HASH=$(find note/public -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{ print $1 }')
           echo "Current Hash: $DIR_HASH"
           echo "hash=$DIR_HASH" >> $GITHUB_OUTPUT
+          echo "$DIR_HASH" > .state/synced_marker
 
       # 4. そのハッシュ値をキーにしてキャッシュを確認する
       - name: Check hash cache
@@ -61,18 +62,20 @@ jobs:
           chmod +x scripts/format_md.sh
           cat format_targets_list.txt | xargs -r ./scripts/format_md.sh
 
+          # キャッシュ用マーカーファイルを作成
+          mkdir -p .state
+          echo "synced" > .state/synced_marker
+
           # 変更があればコミットしてプッシュ
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
           if ! git diff --quiet; then
             git add content/blog/
+            git add .state/synced_marker
             git commit -m "docs: Sync content from other repository"
             git push
           else
             echo "No changes to commit."
           fi
 
-          # キャッシュ用マーカーファイルを作成
-          mkdir -p .state
-          echo "synced" > .state/synced_marker
 
