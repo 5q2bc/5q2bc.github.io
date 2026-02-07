@@ -29,29 +29,41 @@ jobs:
           path: note
           token: ${{ secrets.CONTENT_CHANGE_REFLECTION_TOKEN }}
 
-      # 3. ファイルをコピーし、変更のあったmdファイルのリストを生成する
-      - name: Copy files and create change list
+      # 3. note/public ディレクトリ全体のハッシュ値を計算する
+      - name: Calculate hash of note/public
+        id: calc_hash
         run: |
+          DIR_HASH=$(find note/public -type f -print0 | sort -z | xargs -0 sha256sum | sha256sum | awk '{ print $1 }')
+          echo "Current Hash: $DIR_HASH"
+          echo "hash=$DIR_HASH" >> $GITHUB_OUTPUT
+
+      # 4. そのハッシュ値をキーにしてキャッシュを確認する
+      - name: Check hash cache
+        id: check_cache
+        uses: actions/cache@v4
+        with:
+          path: .state/synced_marker
+          key: content-sync-${{ steps.calc_hash.outputs.hash }}
+
+      # 5. キャッシュが見つからない（変更があった）場合のみ実行する
+      - name: Generate content (Run only if changed)
+        if: steps.check_cache.outputs.cache-hit != 'true'
+        run: |
+          echo "Changes detected. Running sync script..."
+          # note/public → content/blog/raw へ同期
           mkdir -p content/blog/raw
-          # rsyncの--itemize-changes(-i)で変更内容を出力し、
-          # 追加/更新されたmdファイル (>f*.md) のパスだけを抽出してファイルに保存する
+          # 追加・更新されたmdファイルのリストを format_targets_list.txt に出力
           rsync -av --delete --itemize-changes note/public/ content/blog/raw/ | \
-            grep -E '^>f.*\.md$' | awk '{print $2}' > changed_files.txt
+            grep -E '^>f.*\.md$' | awk '{print $2}' > format_targets_list.txt
 
-      # 4. マークダウンファイルをフォーマットする
-      - name: Format markdown files
-        run: |
-          chmod +x scripts/format_md.sh
-          # changed_files.txt にリストされたファイルだけをフォーマット対象にする
+          # マークダウンファイルをフォーマット
           # xargs の -r (--no-run-if-empty) は入力が空の場合にコマンドを実行しないオプション
-          cat changed_files.txt | xargs -r ./scripts/format_md.sh
+          chmod +x scripts/format_md.sh
+          cat format_targets_list.txt | xargs -r ./scripts/format_md.sh
 
-      # 5. 変更があればコミットしてプッシュする
-      - name: Commit and push if changed
-        run: |
+          # 変更があればコミットしてプッシュ
           git config --global user.name "github-actions[bot]"
           git config --global user.email "github-actions[bot]@users.noreply.github.com"
-          # 変更があるか確認
           if ! git diff --quiet; then
             git add content/blog/
             git commit -m "docs: Sync content from other repository"
@@ -59,3 +71,8 @@ jobs:
           else
             echo "No changes to commit."
           fi
+
+          # キャッシュ用マーカーファイルを作成
+          mkdir -p .state
+          echo "synced" > .state/synced_marker
+
