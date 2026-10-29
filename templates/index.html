@@ -1,20 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-    {{ section.content | safe }}
+{% set lang = section.lang | default(value=config.default_language) %}
 
-    {% if config.extra.list_pages %}
-    <ul class="posts">
-        {% for page in section.pages %}
-        <li>
-            <a href="{{ page.permalink }}">{{ page.title }}</a>
-            <span class="date">{{ page.date | date(format="%Y-%m-%d") }}</span>
+<section class="hero">
+    <figure class="hero-figure">
+        <img src="{{ get_url(path='logo.png') }}" alt="">
+        <figcaption class="fig-caption">
+            <span>FIG. 01</span>
+            <span>{{ config.title }}</span>
+        </figcaption>
+    </figure>
+    <div class="hero-intro">
+        <p class="spec-label">About</p>
+        {{ section.content | safe }}
+    </div>
+</section>
+
+<section class="index-section">
+    <div class="section-head">
+        <h2>{% if lang == "en" %}Latest posts{% else %}最新の記事{% endif %}</h2>
+        <span class="spec-label">Index — Blog</span>
+    </div>
+    {% set blog = get_section(path="blog/_index.md", lang=config.default_language) %}
+    <ul class="post-rows">
+        {% for post in blog.pages | slice(end=5) %}
+        <li class="post-row">
+            {% if post.date %}
+            <time datetime="{{ post.date }}">{{ post.date | date(format="%Y-%m-%d") }}</time>
+            {% endif %}
+            <a href="{{ post.permalink }}">{{ post.title }}</a>
+            {% if post.taxonomies.tags %}
+            <span class="row-tags">{% for tag in post.taxonomies.tags %}#{{ tag }} {% endfor %}</span>
+            {% endif %}
         </li>
         {% endfor %}
     </ul>
-    {% endif %}
-
-    {% if paginator %}
-        {% include "partials/pagination.html" %}
-    {% endif %}
+    <p class="more-link"><a href="{{ blog.permalink }}">{% if lang == "en" %}All posts →{% else %}すべての記事 →{% endif %}</a></p>
+</section>
 {% endblock %}
