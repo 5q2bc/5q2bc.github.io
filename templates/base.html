@@ -10,10 +10,7 @@
         <title>{{ config.title }}{% if page.title %} | {{ page.title }}{% endif %}</title>
 
         <link rel="preload" href="{{ get_url(path='css/style.css') }}" as="style">
-        <link rel="stylesheet" href="https://raw.githack.com/Speyll/suCSS/main/reset-min.css" crossorigin="anonymous">
-        <link rel="stylesheet" href="https://raw.githack.com/Speyll/suCSS/main/suCSS-min.css" crossorigin="anonymous">
         <link rel="stylesheet" href="{{ get_url(path='css/style.css') }}">
-        <link rel="stylesheet" href="{{ get_url(path='css/custom.css') }}">
 
         <!-- Add favicon with appropriate sizes -->
         <link rel="icon" href="{{ config.base_url }}/{{ config.extra.favicon | default(value='logo.png') }}">
@@ -26,24 +23,27 @@
         {% elif section %}
         {% set current_lang = section.lang %}
         {% endif %}
-        <nav id="nav-bar">
-            {% for nav_item in config.extra.header_nav %}
-            <a href="{{ nav_item.url }}" class="{% if current_url is defined and nav_item.url == current_url %}active{% endif %}">
-                {% set language_key = 'name_' ~ current_lang %}
-                {{ nav_item[language_key] }}
-            </a>
-            {% endfor %}
+        <header class="site-header">
+            <a class="site-title" href="/">{{ config.title }}</a>
+            <nav id="nav-bar">
+                {% for nav_item in config.extra.header_nav %}
+                <a href="{{ nav_item.url }}" class="{% if current_url is defined and nav_item.url == current_url %}active{% endif %}">
+                    {% set language_key = 'name_' ~ current_lang %}
+                    {{ nav_item[language_key] }}
+                </a>
+                {% endfor %}
 
-            <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme"
-                data-icon-base="{{ get_url(path='icons.svg') }}"
-                data-icon-dark="#darkMode"
-                data-icon-light="#lightMode"
-                data-sound-src="{{ get_url(path='click.ogg') }}">
-                <svg class="icon">
-                    <use id="theme-icon"></use>
-                </svg>
-            </div>
-        </nav>
+                <div class="theme-toggle" id="theme-toggle" role="button" tabindex="0" aria-label="Toggle theme"
+                    data-icon-base="{{ get_url(path='icons.svg') }}"
+                    data-icon-dark="#darkMode"
+                    data-icon-light="#lightMode"
+                    data-sound-src="{{ get_url(path='click.ogg') }}">
+                    <svg class="icon">
+                        <use id="theme-icon"></use>
+                    </svg>
+                </div>
+            </nav>
+        </header>
 
         <main>
             {% block content %}{% endblock %}
@@ -55,7 +55,8 @@
 
         <!-- Move JS to end of body and add defer -->
         <script src="{{ get_url(path='js/script.js') }}" defer></script>
-        <script src="{{ get_url(path='js/anchor-link.js') }}" defer></script<!-- Google tag (gtag.js) -->
+        <script src="{{ get_url(path='js/anchor-link.js') }}" defer></script>
+        <!-- Google tag (gtag.js) -->
         <script async src="https://www.googletagmanager.com/gtag/js?id=G-B3HYYP6VQZ"></script>
         <script>
         window.dataLayer = window.dataLayer || [];

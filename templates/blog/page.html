@@ -8,53 +8,85 @@
 {% block content %}
 <article class="post">
     <header class="post-header">
-        {% if page.date and page.extra.display_published | default(value=true) %}
-        <time datetime="{{ page.date }}">Published on:
-            <span class="accent-data">{{ page.date | date(format="%Y-%m-%d") }}</span>
-        </time>
-        {% endif %}
-
-        {% if page.extra.author %}
-        <address rel="author">By
-            <span class="accent-data">{{ page.extra.author }}</span>
-        </address>
-        {% endif %}
-
+        <p class="spec-label">{% if page.components and page.components[0] == "blog" %}Article{% else %}Page{% endif %}</p>
         <h1>{{ page.title }}</h1>
+        <dl class="meta-band">
+            {% if page.date and page.extra.display_published | default(value=true) %}
+            <div>
+                <dt>Date</dt>
+                <dd><time datetime="{{ page.date }}">{{ page.date | date(format="%Y-%m-%d") }}</time></dd>
+            </div>
+            {% endif %}
+            <div>
+                <dt>Author</dt>
+                <dd>{{ page.extra.author | default(value=config.extra.author) }}</dd>
+            </div>
+            <div>
+                <dt>Reading time</dt>
+                <dd>{{ page.reading_time }} min</dd>
+            </div>
+            {% if page.taxonomies.tags %}
+            <div>
+                <dt>Tags</dt>
+                <dd>
+                    {% for tag in page.taxonomies.tags %}
+                    <a href="{{ get_taxonomy_url(kind='tags', name=tag) }}">#{{ tag }}</a>
+                    {% endfor %}
+                </dd>
+            </div>
+            {% endif %}
+        </dl>
     </header>
 
-{% if page.toc %}
-<div class="toc-container">
-    <h4>Table of content</h4>
-    <ul> 
-        {% for h1 in page.toc %}
-        <li>
-            <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
-            {% if h1.children %}
-            <ul>
-                {% for h2 in h1.children %}
-                <li><a href="{{ h2.permalink | safe }}">{{ h2.title }}</a></li>
+    <div class="article-layout{% if not page.toc %} no-toc{% endif %}">
+        {% if page.toc %}
+        <aside class="toc-container">
+            <p class="spec-label">Contents</p>
+            <ol class="toc-list">
+                {% for h1 in page.toc %}
+                <li>
+                    <a href="{{ h1.permalink | safe }}">{{ h1.title }}</a>
+                    {% if h1.children %}
+                    <ol>
+                        {% for h2 in h1.children %}
+                        <li><a href="{{ h2.permalink | safe }}">{{ h2.title }}</a></li>
+                        {% endfor %}
+                    </ol>
+                    {% endif %}
+                </li>
                 {% endfor %}
-            </ul>
-            {% endif %}
-        </li>
-        {% endfor %}
-    </ul>
-</div>
-{% endif %}
+            </ol>
+        </aside>
+        {% endif %}
 
-    <div class="post-content">
-        {{ page.content | safe }}
+        <div class="post-content article-body">
+            {{ page.content | safe }}
+        </div>
     </div>
 
     {% include "partials/share-links.html" %}
 
-    {% if page.taxonomies.tags %}
-    <footer class="post-tags">
-        {% for tag in page.taxonomies.tags %}
-        <a href="/tags/{{ tag | slugify }}" class="tag">#{{ tag }}</a>
-        {% endfor %}
-    </footer>
+    {% if page.lower or page.higher %}
+    <nav class="prev-next">
+        {% if page.lower %}
+        <a class="pn pn-prev" href="{{ page.lower.permalink }}">
+            <span class="spec-label">← Older</span>
+            {{ page.lower.title }}
+        </a>
+        {% endif %}
+        {% if page.higher %}
+        <a class="pn pn-next" href="{{ page.higher.permalink }}">
+            <span class="spec-label">Newer →</span>
+            {{ page.higher.title }}
+        </a>
+        {% endif %}
+    </nav>
     {% endif %}
+
+    <aside class="author-box">
+        <p class="spec-label">Author</p>
+        <p class="author-name">{{ page.extra.author | default(value=config.extra.author) }}</p>
+        <p>{{ config.description }}</p>
+    </aside>
 </article>
 {% endblock %}
