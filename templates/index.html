@@ -24,7 +24,7 @@
     </div>
     {% set blog = get_section(path="blog/_index.md", lang=config.default_language) %}
     <ul class="post-rows">
-        {% for post in blog.pages | slice(end=5) %}
+        {% for post in blog.pages %}{% if loop.index > 5 %}{% break %}{% endif %}
         <li class="post-row">
             {% if post.date %}
             <time datetime="{{ post.date }}">{{ post.date | date(format="%Y-%m-%d") }}</time>
