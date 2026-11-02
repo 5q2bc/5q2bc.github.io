@@ -1,0 +1,299 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+    <title>kauai tech-blog</title>
+    <link href="https://5q2bc.github.io/atom.xml" rel="self"/>
+    <link href="https://5q2bc.github.io/"/>
+    <updated>2026-11-02T11:11:26+0000</updated>
+    <id>https://5q2bc.github.io/</id>
+
+    
+    
+    
+    
+        
+    
+    
+    
+        
+        
+            
+            <entry>
+                <title>VSCodeでワークスペースごとに独自のキーボードショートカットを使う裏技</title>
+                <link href="https://5q2bc.github.io/blog/vscodedewakusupesugotonidu-zi-nokibodosiyotokatutowoshi-uli-ji/"/>
+                <updated>2026-02-22T00:00:00+0000</updated>
+                <id>https://5q2bc.github.io/blog/vscodedewakusupesugotonidu-zi-nokibodosiyotokatutowoshi-uli-ji/</id>
+                <content type="html">&lt;p&gt;皆さんはVSCodeに独自のキーボードショートカット追加していますか?&lt;br /&gt;
+よく使う小技的なものや、VSCodeのタスク機能を割り当ててコマンド実行をさせている方も多いんじゃないでしょうか。&lt;/p&gt;
+&lt;p&gt;VSCodeのキーボードショートカット作成はkeybinding.jsonを編集することで可能で、キーボードショートカットごとに発動条件を“When“で指定することができます。&lt;br /&gt;
+例えば&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;json&quot;&gt;	{
+	&amp;quot;key&amp;quot;: &amp;quot;ctrl+shift+j&amp;quot;,
+	&amp;quot;command&amp;quot;: &amp;quot;workbench.action.terminal.focus&amp;quot;,
+	&amp;quot;when&amp;quot;: &amp;quot;editorTextFocus&amp;quot;
+	},{
+	&amp;quot;key&amp;quot;: &amp;quot;ctrl+shift+j&amp;quot;,
+	&amp;quot;command&amp;quot;: &amp;quot;workbench.action.focusFirstEditorGroup&amp;quot;,
+	&amp;quot;when&amp;quot;: &amp;quot;terminalFocus&amp;quot;
+	},
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;とすることで同じctrl+shift+jのショートカットを&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;エディター選択時はターミナルに移動&lt;/li&gt;
+&lt;li&gt;ターミナル選択時はエディターに移動&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;として使うことができます。&lt;br /&gt;
+(話は逸れますが、このショートカットは個人的によく使うもので、ctrl+jのパネル表示/非表示との親和性が高いのでおすすめです)&lt;/p&gt;
+&lt;p&gt;whenの詳しい使い方については &lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https://code.visualstudio.com/api/references/when-clause-contexts&quot;&gt;公式の解説&lt;/a&gt;を参照してください&lt;/p&gt;
+&lt;p&gt;ですがwhenでは対応できないこんなシチュエーションに遭遇したことはありませんか?&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;同じキーボードショートカットをワークスペースごとに意味を変えたい&lt;/li&gt;
+&lt;li&gt;押しやすいキーの組み合わせをワークスペースごとに意味を変えて使いたい&lt;/li&gt;
+&lt;li&gt;特定のワークスペースだけでしか使わないキーボードショートカットがある&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;これらはVSCodeではワークスペースごとにkeybinding.jsonを置くことができず、whenの機能ではワークスペースを識別できないために生じます。&lt;br /&gt;
+そのため公式にはワークスペースごとに違ったキーボードショートカットを使うことはサポートされていないのですが、今回はこれを(あまりスマートではないが便利な)裏技で回避していきます。&lt;/p&gt;
+&lt;h1 id=&quot;yarukotonogai-yao&quot;&gt;やることの概要&lt;/h1&gt;
+&lt;p&gt;やることとしては至ってシンプルです。&lt;br /&gt;
+ワークスペースごとに定義できないのならばワークスペースごとにフラグを作成し、それを見てキーボードショートカットの有効無効を変えてやろうという作戦になります。&lt;/p&gt;
+&lt;p&gt;具体的には&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;ワークスペースの.vscode/setting.jsonのファイルでワークスペースに固有の設定値にTrueを入れる&lt;/li&gt;
+&lt;li&gt;keybinding.jsonの使いたいキーボードショートカットの“when“で1. で指定した設定値がTrueかどうかの確認をいれる&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;となります。&lt;br /&gt;
+一つづつ見ていきましょう。&lt;/p&gt;
+&lt;h1 id=&quot;wakusupesudenoshe-ding&quot;&gt;ワークスペースでの設定&lt;/h1&gt;
+&lt;p&gt;ワークスペースの識別のために固有のフラグを作ります。&lt;/p&gt;
+&lt;p&gt;まず使いたいワークスペースを開き、VSCodeのワークスペースごとの設定情報を入れる&lt;code&gt;.vscode/setting.json&lt;/code&gt;フォルダに移動します。(なければ作成してください)&lt;/p&gt;
+&lt;p&gt;次に中に次の１行を追加します。&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;json&quot;&gt;{
+	&amp;quot;workspaceKeybindings.hogehoge_ws.enabled&amp;quot;: true,
+}
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;ここの“workspaceKeybindings.hogehoge_ws.enabled“はいま適当に考えた名前なので、VSCodeに「不明な構成設定」とか言われてグレーアウトされますが、気にしなくて良いです。&lt;br /&gt;
+名前もワークスペースごとにお好きなものに変えてください。&lt;/p&gt;
+&lt;p&gt;以上でワークスペース側での設定は終わりです。&lt;/p&gt;
+&lt;h1 id=&quot;keybinding-jsondenoshe-ding&quot;&gt;keybinding.jsonでの設定&lt;/h1&gt;
+&lt;p&gt;keybinding.jsonを編集して、ショートカットがワークスペース側で作ったフラグを判定できるようにします。&lt;/p&gt;
+&lt;p&gt;具体的には下記のようにします。フラグの名前はそれぞれのワークスペースでつけたものと合わせてください。&lt;/p&gt;
+&lt;pre&gt;&lt;code data-lang=&quot;json&quot;&gt;	{
+	&amp;quot;key&amp;quot;: &amp;quot;ctrl+shift+q&amp;quot;,
+	&amp;quot;command&amp;quot;: &amp;quot;command_1&amp;quot;,
+	&amp;quot;when&amp;quot;: &amp;quot;workspaceKeybindings.hogehoge_ws.enabled&amp;quot;,
+	},
+	{
+	&amp;quot;key&amp;quot;: &amp;quot;ctrl+shift+q&amp;quot;,
+	&amp;quot;command&amp;quot;: &amp;quot;command_2&amp;quot;,
+	&amp;quot;when&amp;quot;: &amp;quot;workspaceKeybindings.hugahuga_ws.enabled&amp;quot;,
+	},
+&lt;/code&gt;&lt;/pre&gt;
+&lt;p&gt;↑のようにすると、同じctrl+shift+qのショートカットでworkspaceKeybindings.hogehoge_ws.enabledがTrueにしているワークスペースではcommand_1が、workspaceKeybindings.hugahuga_ws.enabledがTrueにしているワークスペースではcommand_2が実行されます。&lt;/p&gt;
+&lt;h1 id=&quot;owari&quot;&gt;おわり&lt;/h1&gt;
+&lt;p&gt;以上のようにすることでワークスペースごとに独自のキーボードショートカットを使うことができます。&lt;br /&gt;
+ワークスペースだけで完結できないのが玉に瑕ですが、かゆいところに手が届くようになる場合もあると思いますので、参考にしてご活用ください&lt;/p&gt;
+&lt;h2 id=&quot;can-kao&quot;&gt;参考&lt;/h2&gt;
+&lt;p&gt;https://stackoverflow.com/questions/48945319/a-keybindings-json-per-workspace-in-visual-studio-code&lt;/p&gt;
+</content>
+            </entry>
+            
+        
+            
+            <entry>
+                <title>VibeCodingで維持費無料のブログを始めてみた</title>
+                <link href="https://5q2bc.github.io/blog/vibecodingdewei-chi-fei-wu-liao-noburoguwoshi-metemita/"/>
+                <updated>2026-02-22T00:00:00+0000</updated>
+                <id>https://5q2bc.github.io/blog/vibecodingdewei-chi-fei-wu-liao-noburoguwoshi-metemita/</id>
+                <content type="html">&lt;h2 id=&quot;hazimeni&quot;&gt;はじめに&lt;/h2&gt;
+&lt;p&gt;VibeCodingを活用し、Web開発の知識がほとんどない状態から、できるだけコードに触れずにブログサイトを構築した過程をまとめました。&lt;br /&gt;
+Web技術がほとんど分からない状態でも、AIツールを活用すれば簡単にブログサイトが作れるという内容です。
+叩いたコマンドの記載はないので、実際に試す際はそれぞれの公式ドキュメントを参照してください。もしくは、お手持ちのAIに聞いてみてください。&lt;/p&gt;
+&lt;p&gt;利用したAIツール:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Gemini CLI（主に実装・自動化で活用）&lt;/li&gt;
+&lt;li&gt;GitHub Copilot（軽い質問や手動編集時の補完に使用）&lt;/li&gt;
+&lt;li&gt;ChatGPT（参考URLの調査などに活用）&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;cheng-guo-wu&quot;&gt;成果物&lt;/h2&gt;
+&lt;p&gt;先に完成したサイトを見てみましょう。&lt;br /&gt;
+&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https://5q2bc.github.io/&quot;&gt;作成したブログサイト&lt;/a&gt;&lt;br /&gt;
+&lt;a rel=&quot;noopener external&quot; target=&quot;_blank&quot; href=&quot;https://github.com/5q2bc/5q2bc.github.io&quot;&gt;GitHubリポジトリ&lt;/a&gt;&lt;br /&gt;
+（説明の都合で、実際のサイトのコミット履歴とは異なる部分があります）&lt;/p&gt;
+&lt;h2 id=&quot;ji-shu-xuan-ding-ren-jian&quot;&gt;技術選定（人間）&lt;/h2&gt;
+&lt;p&gt;静的サイトジェネレーターにはZolaを選び、ホスティングはGitHub Pagesを利用しました。&lt;br /&gt;
+Markdownで書けるならJekyllやHugoでも良かったのですが、&lt;strong&gt;Rust製&lt;/strong&gt;という理由でZolaを選びました（あ、私Rustが好きです）。ビルド速度も速いらしいですが、小規模サイトでは体感差はほぼありません。テーマの好みや使いやすさで選ぶのが一番だと思います。GitHub Pagesは、リポジトリを公開するだけで簡単にホスティングできる点が魅力でした。&lt;/p&gt;
+&lt;p&gt;HugoやJekyllでも同様のことができるので、気に入るテーマが見つかるものを選ぶのが良いと思います。&lt;/p&gt;
+&lt;h2 id=&quot;ripozitorizuo-cheng-ren-jian&quot;&gt;リポジトリ作成（人間）&lt;/h2&gt;
+&lt;p&gt;ゼロから作るのは手間だったので、Zolaのテーマをクローンし、LiveDemoサイトを参考にたたき台を作成しました。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Zolaのテーマを選定&lt;/li&gt;
+&lt;li&gt;テーマをローカルにクローン&lt;/li&gt;
+&lt;li&gt;LiveDemo用コンテンツを削除（Gemini CLIで自動化）&lt;/li&gt;
+&lt;li&gt;サイト名などを自分用に変更&lt;/li&gt;
+&lt;li&gt;テーマのGit履歴を削除し、&lt;code&gt;git init&lt;/code&gt;で新規リポジトリ化&lt;/li&gt;
+&lt;li&gt;GitHubで&lt;code&gt;{Username}.github.io&lt;/code&gt;リポジトリを作成&lt;/li&gt;
+&lt;li&gt;リモートを追加し、ローカルからプッシュ&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;ここまででサイトのベースが完成します。&lt;/p&gt;
+&lt;h2 id=&quot;rokaruhuan-jing-gou-zhu-gemini-cli&quot;&gt;ローカル環境構築（Gemini CLI）&lt;/h2&gt;
+&lt;p&gt;Gemini CLIの&lt;code&gt;--yolo&lt;/code&gt;オプションで、RustやZolaのセットアップも自動化できました。コマンドはZola公式ドキュメントを参照すればOKです。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;https://www.rust-lang.org/tools/install&lt;/li&gt;
+&lt;li&gt;https://www.getzola.org/documentation/getting-started/cli-usage/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;これでローカルでビルド・プレビューできる環境が整いました。&lt;/p&gt;
+&lt;h2 id=&quot;github-actionsdezi-dong-depuroi-gemini-cli&quot;&gt;GitHub Actionsで自動デプロイ（Gemini CLI）&lt;/h2&gt;
+&lt;p&gt;GitHub Actionsの設定ファイルもGemini CLIの&lt;code&gt;--yolo&lt;/code&gt;で、公式ドキュメントに沿って進めてもらいました。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;https://www.getzola.org/documentation/deployment/github-pages/&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;ビルド自体は問題なく進みましたが、GitHub Pagesの公開ブランチ設定を間違えて（&lt;code&gt;master&lt;/code&gt;に設定していたが、自動デプロイ先の&lt;code&gt;gh-pages&lt;/code&gt;が正解だった）、1時間ほど悩みました。人間が何かするときは公式ドキュメントをよく読み、落ち着いて設定しましょう（でないとAIより頭が悪いのがばれます）。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;https://docs.github.com/ja/pages/getting-started-with-github-pages/creating-a-github-pages-site&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;これで最小構成のサイトが自動デプロイできるようになりました。&lt;/p&gt;
+&lt;p&gt;Tips：&lt;br /&gt;
+長い細かい指示出しが面倒なときは、参考サイトを示して「このサイトのように作って」と指示すると、AIが必要なコードを生成してくれる確率が上がります。&lt;/p&gt;
+&lt;h2 id=&quot;kontentuguan-li-yong-ripozitorizhui-jia-gemini-cli&quot;&gt;コンテンツ管理用リポジトリ追加（Gemini CLI）&lt;/h2&gt;
+&lt;p&gt;コンテンツとホスティングを分離したかったので、管理用リポジトリを新たに作成しました。&lt;br /&gt;
+&lt;code&gt;public&lt;/code&gt;ディレクトリの変更を検知し、GitHub Actionsでホスティング用リポジトリにMarkdownをコピー＆デプロイする仕組みもGemini CLIで自動生成できました。&lt;/p&gt;
+&lt;h2 id=&quot;saitoji-neng-nozhui-jia-gemini-cli-github-copilot&quot;&gt;サイト機能の追加（Gemini CLI + GitHub Copilot）&lt;/h2&gt;
+&lt;p&gt;ここからは欲しい機能をAIに指示して追加していきました。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;目次の自動生成&lt;/li&gt;
+&lt;li&gt;見出しへのアンカーリンク&lt;/li&gt;
+&lt;li&gt;コードブロックのコピペボタン&lt;/li&gt;
+&lt;li&gt;コードブロックのシンタックスハイライト&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;指示→コード生成→修正→テスト（今回は人力）を繰り返し、納得いくまで改善しました。Web開発未経験でも、普段見ているサイトの機能をどんどん追加できるのが楽しかったです。&lt;/p&gt;
+&lt;p&gt;Tips:&lt;br /&gt;
+一般的な話ですが、機能実装は小さく小さく作っていくと確実です。大きな機能を一気に実装しようとすると、バグが出たときに原因を特定しづらくなります。小さな単位で実装し、テストを繰り返すことで、問題の切り分けが容易になります。&lt;br /&gt;
+例えばコピペボタンを追加する場合、まずはボタンの表示だけ実装し、次にクリック時の動作を追加するなど、段階的に進めると良いと思います。&lt;/p&gt;
+&lt;h2 id=&quot;zuo-cheng-sitemitefen-katutakoto&quot;&gt;作成してみて分かったこと&lt;/h2&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;AIの提案で学びが増える&lt;/strong&gt;: CopilotやGeminiの提案を読むことで、知らなかったWeb技術への理解が(チョット)深まりました。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;今後の機能実装のハードルが下がる&lt;/strong&gt;: VibeCodingで知識ゼロから機能追加できるので、今後もAIを活用してサイトを育てていこうと思えます。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;更新のハードルが下がる&lt;/strong&gt;: Markdownで書いてプッシュするだけなので、思いついたときにすぐ記事を追加できます。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;h2 id=&quot;matome&quot;&gt;まとめ&lt;/h2&gt;
+&lt;p&gt;VibeCodingとAIツールを活用すれば、Web開発初心者でも維持費ゼロのブログサイトを簡単に構築・運用できます。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;&lt;strong&gt;AIツールの活用&lt;/strong&gt;: Gemini CLIやGitHub Copilotで、面倒な設定や自動化、機能追加もスムーズ。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;静的サイトジェネレーターの選択&lt;/strong&gt;: ZolaでMarkdownベースのシンプル運用と高速ビルド。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;GitHub Actionsによる自動デプロイ&lt;/strong&gt;: 手作業を減らし、更新のたびに自動公開。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;コンテンツとホスティングの分離&lt;/strong&gt;: 管理しやすく、拡張や運用も柔軟。&lt;/li&gt;
+&lt;li&gt;&lt;strong&gt;機能追加もAIで効率化&lt;/strong&gt;: 目次やアンカーリンク、コピペボタンなども短時間で実装。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;今後もAIツールを活用しながら、必要な機能追加やデザイン調整を行い、自分だけのブログを育てていきたいと思います。&lt;/p&gt;
+&lt;hr /&gt;
+&lt;p&gt;この記事が、これからVibeCodingやAIツールでWebサイトを作りたい方の参考になれば幸いです。&lt;/p&gt;
+</content>
+            </entry>
+            
+        
+            
+            <entry>
+                <title>私がOpenClawを使って分かった画期的な点と使うのをやめた理由</title>
+                <link href="https://5q2bc.github.io/blog/si-gaopenclawwoshi-tutefen-katutahua-qi-de-nadian-toshi-unowoyametali-you/"/>
+                <updated>2026-02-22T00:00:00+0000</updated>
+                <id>https://5q2bc.github.io/blog/si-gaopenclawwoshi-tutefen-katutahua-qi-de-nadian-toshi-unowoyametali-you/</id>
+                <content type="html">&lt;p&gt;&lt;strong&gt;私がOpenClawを使って分かった画期的な点と使うのをやめた理由&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;サラリーマンの私にとって、通勤電車の中でスマホ一つで「昨日の米株の値動きと関連ニュースについてまとめて」「新着のニュースレターやメルマガの中から興味ありそうなものをピックアップして要約して」「○○について調査して、結果をまとめてNotionに追記して」とDiscordで指示を出せるのは本当に便利でした。(しかもローカル環境なので、出力のmarkdownファイルが残るのもうれしい)&lt;br /&gt;
+でも、約2週間本気で使い倒した結果、UXとして画期的ではあるけど自分はもう使わないと結論づけました。&lt;/p&gt;
+&lt;p&gt;この記事では、実際に使って便利に思った点と、結局やめた理由を正直に書きます。&lt;/p&gt;
+&lt;h3 id=&quot;openclawtoha-nazeyi-qi-niliu-xing-tutanoka&quot;&gt;OpenClawとは？ なぜ一気に流行ったのか&lt;/h3&gt;
+&lt;p&gt;OpenClaw（旧Clawdbot / Moltbot）は、自分のPCに常駐するオープンソースのAIエージェントです。&lt;br /&gt;
+ChatGPTやClaudeのように「聞かれたら答える」のではなく、&lt;strong&gt;自分から動き出す&lt;/strong&gt;のが最大の特徴。&lt;br /&gt;
+WhatsApp、Telegram、Slack、Discord、iMessageなど、普段使っているチャットアプリからそのまま呼び出せて、メール送信、カレンダー管理、ブラウザ操作、ファイル整理までやってくれます。&lt;/p&gt;
+&lt;h3 id=&quot;shi-ji-nishi-tutefen-katuta-hua-qi-de-nadian&quot;&gt;実際に使って分かった「画期的な点」&lt;/h3&gt;
+&lt;h4 id=&quot;1-24shi-jian-365ri-pcnichang-zhu-sitetiyatutodehu-bichu-seru&quot;&gt;1. 24時間365日、PCに常駐してチャットで呼び出せる&lt;/h4&gt;
+&lt;p&gt;今までは「AIに仕事を任せる」といっても、自分でブラウザ開いてプロンプト入力するしかありませんでした。&lt;br /&gt;
+OpenClawはPCの電源が入っていれば常に待機状態です。時間のかかるタスクでも休憩中にチャットで指示を出して、帰宅中に確認する。帰宅中にまた指示を出して、帰宅後に結果を確認する。みたいなことが可能です。&lt;br /&gt;
+この「いつでもどこからでも指示を出せる」体験が、私物のPCに触れる時間が限られるサラリーマンの私とっては革命的でした。&lt;/p&gt;
+&lt;h4 id=&quot;2-aiga-zi-fa-de-ni-dong-kichu-su&quot;&gt;2. AIが「自発的に」動き出す&lt;/h4&gt;
+&lt;p&gt;従来のAIエージェントは「指示待ち」です。&lt;br /&gt;
+でもOpenClawは**Heartbeat（ハートビート）**という仕組みで、数秒〜数分ごとに自分で「起きて」状況を確認します。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;朝8時にニュースを要約して送ってくる&lt;/li&gt;
+&lt;li&gt;特定のメールが来たら自動返信&lt;/li&gt;
+&lt;li&gt;予定時刻にリマインダー&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;後述しますが、これは諸刃の剣で、便利な反面コストもかかります。&lt;/p&gt;
+&lt;h4 id=&quot;3-wai-bu-metuseziapurinogong-shi-sapotogachong-shi&quot;&gt;3. 外部メッセージアプリの公式サポートが充実&lt;/h4&gt;
+&lt;p&gt;活発なOSSコミュニティのおかげで、ほぼすべての主要チャットアプリと簡単に連携できます。&lt;br /&gt;
+公式でサポートされているので、設定も比較的簡単。コミュニティ製のスキルもどんどん増えています。&lt;/p&gt;
+&lt;p&gt;これも後述しますが、コミュニティ製のスキルは便利だけどセキュリティリスクが高いものも多く、使う際には注意が必要です。&lt;/p&gt;
+&lt;h4 id=&quot;4-rokaruhuasutoshe-ji-gahatukaxin-wokusuguru&quot;&gt;4. ローカルファースト設計がハッカー心をくすぐる&lt;/h4&gt;
+&lt;p&gt;すべて自分のPC内で完結できます。&lt;br /&gt;
+ハッカーは技術の民主化とか好きなので(偏見)、これは魅力です。&lt;br /&gt;
+GoogleDriveをケチって自宅にNASを置いている自分的にも刺さりました。&lt;/p&gt;
+&lt;h4 id=&quot;5-wan-quan-nisekiyua-wodi-metakarakosodekirukotonoduo-sa&quot;&gt;5. 「完全にセキュア」を諦めたからこそできることの多さ&lt;/h4&gt;
+&lt;p&gt;外部アプリからローカルPCを直接操作できる構造は、究極の利便性を生みます。&lt;br /&gt;
+ただし同時に「究極のバックドア」にもなり得る——これが後でネックになりました。&lt;/p&gt;
+&lt;h3 id=&quot;konoli-bian-xing-wozhi-eru3tunohe-xin-ji-neng&quot;&gt;この利便性を支える3つの核心機能&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;Heartbeat（ハートビート）&lt;/strong&gt;&lt;br /&gt;
+「何もしなくても常に動いている」状態のトリガー。&lt;br /&gt;
+一定間隔で起き上がって、外部メッセージの確認・予定タスクの実行・PC状況のチェックをしてくれます。これがあるからこそ本当の自律動作が可能に。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;SOUL（ソウル）&lt;/strong&gt;&lt;br /&gt;
+YAML形式の設定ファイルでAIの「人格」を完全にカスタマイズできます。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;敬語で話す秘書タイプ&lt;/li&gt;
+&lt;li&gt;毒舌でストレートな上司タイプ&lt;/li&gt;
+&lt;li&gt;「セキュリティ最優先」「返信は必ず3行以内」などの行動原則&lt;br /&gt;
+自分好みに書き換えるだけで、完全に自分専用の執事が生まれます。
+Discordでチャンネルごとに人格を変えることも可能です。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;MEMORY（メモリー）&lt;/strong&gt;&lt;br /&gt;
+従来AIが忘れてしまう「長期記憶」を持っています。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Episodic Memory：過去の会話やミスを覚えている&lt;/li&gt;
+&lt;li&gt;Semantic Memory：PC内のファイル構成やアプリ操作方法を学習&lt;br /&gt;
+「昨日頼んだあの件、どうなった？」と聞くだけで文脈を理解して答えてくれます。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&quot;demo-jie-ju-shi-isok-kerunohayamemasita&quot;&gt;でも、結局使い続けるのはやめました&lt;/h3&gt;
+&lt;h4 id=&quot;li-you-1-llmnochang-shi-shi-yong-niyorukosutogayu-xiang-yi-shang&quot;&gt;理由①：LLMの常時使用によるコストが予想以上&lt;/h4&gt;
+&lt;p&gt;1週間で&lt;strong&gt;約2000円以上&lt;/strong&gt;かかりました。隙間を見つけては使っていましたが、がっつり重たい作業をさせ続けたわけじゃないのに結構金食うなという印象です。&lt;br /&gt;
+(定額のサブスクで使うと最悪垢BANになる可能性もあると聞いてOpenRouterでclaude 4.5を使用。)
+他のユーザーを見ても、「最適化なしで週数千円〜1万円超える」事例がかなりあります（特に高性能モデルを常時使っている場合）。&lt;br /&gt;
+加えて、個人的には深夜の何もやらせていない時間もお金が解けていくのが嫌でした。
+私は開発環境を24時間稼働させる予定は続けますが、OpenClawではなく&lt;strong&gt;ClaudeCode(or OpenCode)+自前のBashスクリプト＋cron&lt;/strong&gt;で「決まった時間にだけタスクをキック」する形に切り替えるつもりです。これならコストを大幅に圧縮できるのではと考えています。&lt;/p&gt;
+&lt;h4 id=&quot;li-you-2-sekiyuriteirisukugashi-enai&quot;&gt;理由②：セキュリティリスクが拭えない&lt;/h4&gt;
+&lt;p&gt;構造上「完全にセキュアな状態」は存在しません。&lt;br /&gt;
+「盗まれてもいい情報しか置かない」と割り切っても、&lt;strong&gt;PC自体がハッキングの踏み台&lt;/strong&gt;にされる可能性は残ります。&lt;br /&gt;
+公式もセキュリティガイドを充実させていますが、根本的なリスクは避けられません。&lt;/p&gt;
+&lt;h4 id=&quot;li-you-3-da-shou-pureiyanodong-kigasu-sugiru&quot;&gt;理由③：大手プレイヤーの動きが速すぎる&lt;/h4&gt;
+&lt;p&gt;ここ数ヶ月でAIエージェント環境は劇的に変わりました。&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;OpenClaw開発者のPeter Steinberger氏がOpenAIに参画（OpenClaw自体は独立したオープンソース財団に移行し、OpenAIが支援継続）&lt;/li&gt;
+&lt;li&gt;Meta傘下の&lt;strong&gt;Manus AI&lt;/strong&gt;が、メール・カレンダーをしっかり統合した実用的なAI Agentを提供開始&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;今後、よりセキュアで低コスト・クラウド管理の選択肢がどんどん出てくるのは確実です。&lt;/p&gt;
+&lt;h3 id=&quot;jie-lun-jin-nozi-fen-niha-tiyoudoiiju-li-gan-gabi-yao-datuta&quot;&gt;結論：今の自分には「ちょうどいい距離感」が必要だった&lt;/h3&gt;
+&lt;p&gt;OpenClawは本当に画期的で、使ってみて「AIの本当の可能性」を肌で感じました。&lt;br /&gt;
+でも私のような普通のサラリーマンには、個人的に使うには&lt;strong&gt;コストとリスクのバランス&lt;/strong&gt;がまだ合わなかった。&lt;/p&gt;
+&lt;p&gt;今はローカル環境で動く高コスパなAIエージェントを自分で構築して、必要なときだけ動かすスタイルが自分には合っていると感じています。
+がっつり個人情報を任せるのはおそらく半年もかからず出てくるであろう大手のセキュアなサービスに任せようかなと思ってます。&lt;/p&gt;
+</content>
+            </entry>
+            
+        
+            
+            <entry>
+                <title>test</title>
+                <link href="https://5q2bc.github.io/blog/test/"/>
+                <updated>2025-07-06T00:00:00+0000</updated>
+                <id>https://5q2bc.github.io/blog/test/</id>
+                <content type="html">&lt;p&gt;test text&lt;/p&gt;
+</content>
+            </entry>
+            
+        
+    
+</feed>
