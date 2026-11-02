@@ -30,7 +30,7 @@ process_file() {
   echo '[extra]' >> "$dest"
   echo 'display_published = true' >> "$dest"
   echo 'toc = true' >> "$dest"
-  echo 'author = "5q2bc"' >> "$dest"
+  echo 'author = "kauai"' >> "$dest"
   echo '+++' >> "$dest"
   echo '' >> "$dest"
 
