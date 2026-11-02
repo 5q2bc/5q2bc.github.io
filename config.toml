@@ -45,7 +45,7 @@ internal_level = "warn"
 
 # Extra
 [extra]
-author = "5q2bc"
+author = "kauai"
 favicon = "logo.png"
 list_pages = false
 twitter_card = true

@@ -5,7 +5,7 @@ date = 2026-02-22
 [extra]
 display_published = true
 toc = true
-author = "5q2bc"
+author = "kauai"
 +++
 
 **私がOpenClawを使って分かった画期的な点と使うのをやめた理由**
